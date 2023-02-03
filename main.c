@@ -7,6 +7,7 @@
 #include <conio.h>
 
 int gameMechanics();
+void showScores();
 
 // Konstanter för MIN och MAX
 const int MINROLL = 1;
@@ -14,8 +15,17 @@ const int MAXROLL = 100;
 
 int main()
 {
-    // Variabler för gissningar, svaret, huvudmenyn och om spelet är igång
-    
+    // Filhantering, skapa fil för lowscore om den inte finns
+    FILE *pScores = fopen("score.low", "r");
+    char buffer[255];
+    if(pScores == NULL)
+    {
+        FILE *pScores = fopen("score.low", "w");
+        fprintf(pScores, "Bettan\n50\nCharlie\n60\nTomtom\n70\nFrank\n80\nMona\n90");
+    }
+    fclose(pScores);
+
+    // Variabler för gissningar, svaret, huvudmenyn och om spelet är igång    
     bool gameIsRunning = true;
     int mainMenuSelection = 0;    
     char pauseBuffer;
@@ -44,6 +54,8 @@ int main()
         break;
 
         case 2:
+        showScores();
+        mainMenuSelection = 0;
         break;
 
         case 3:
@@ -93,4 +105,26 @@ int gameMechanics()
     } while (playerGuess != randomNumber);
 
     return numberOfGuesses - 1;
+}
+
+void showScores()
+{
+    char scoreNames[5];
+    int scoreScores[5];
+    FILE *pScores = fopen("score.low", "r");
+    char buffer[255];
+    // fscanf(ftpr, "r%d=%d\n", &n, &var);
+    for (int i = 0; i < 5; i++)
+    {
+        fscanf(pScores, "%s", &scoreNames[i]);
+        fscanf(pScores, "%d", &scoreScores[i]);
+    }
+
+    for(int j = 0; j < 5; j++)
+    {
+        printf("%s\t%d\n", scoreNames[j], scoreScores[j]);
+    }
+    fclose(pScores);
+    return;
+    
 }
