@@ -6,8 +6,7 @@
 #include <stdbool.h>
 #include <conio.h>
 
-void gameMechanics();
-int mainMenu(int mainMenuSelection);
+int gameMechanics();
 
 // Konstanter för MIN och MAX
 const int MINROLL = 1;
@@ -23,12 +22,25 @@ int main()
 
     while(gameIsRunning)
     {
-        mainMenu(mainMenuSelection);
+        char mainMenuInput[5];
+        int numberOfGuesses;
+    
+        while(mainMenuSelection == 0)
+            {
+                printf("\t*** GISSA ETT TAL ***\n");
+                printf("\tHuvudmeny\n\n");
+                printf("Välj ett alternativ med 1, 2 eller 3.\n");
+                printf("1. Spela\n2. Lowscorelistan\n3. Avsluta\nVal: ");
+                scanf(" %s", &mainMenuInput);
+                mainMenuSelection = atoi(mainMenuInput);
+            }
             
         switch(mainMenuSelection)
         {
         case 1:
-        gameMechanics();
+        numberOfGuesses = gameMechanics();
+        printf("%d\n", numberOfGuesses);
+        mainMenuSelection = 0;
         break;
 
         case 2:
@@ -44,20 +56,21 @@ int main()
     return 0;
 }
 
-void gameMechanics()
+int gameMechanics()
 {
-    int numberOfGuesses = 0;
-    int playerGuess = 101;
     int randomNumber;
     char playerInput[5];
+    int playerGuess;
+    int numberOfGuesses = 1;
     // Generera random seed och sätt ett slumptal mellan 1 och 100 i randomNumber
     srand(time(0));
     randomNumber = (rand() % MAXROLL) + MINROLL;
+    system("cls");
 
     do
     {
         printf("Skriv in din gissning.\nGissning: ");
-        scanf(" %4s", &playerInput);
+        scanf(" %s", &playerInput);
         playerGuess = atoi(playerInput);
                 
         if(playerGuess < 1 || playerGuess > 100)
@@ -75,28 +88,9 @@ void gameMechanics()
         else
         {
             printf("Rätt! Bra gissat.\nDu gissade rätt på %d försök.\nTryck Enter för att fortsätta.\n", numberOfGuesses);
-            fflush(stdin);
         }
         numberOfGuesses++;
-        fflush(stdin);
     } while (playerGuess != randomNumber);
 
-    return;
-}
-
-int mainMenu(int mainMenuSelection)
-{
-    char mainMenuInput[5];
-    
-    while(mainMenuSelection == 0)
-        {
-            printf("\t*** GISSA ETT TAL ***\n");
-            printf("\tHuvudmeny\n\n");
-            printf("Välj ett alternativ med 1, 2 eller 3.\n");
-            printf("1. Spela\n2. Lowscorelistan\n3. Avsluta\nVal: ");
-            scanf(" %4s", &mainMenuInput);
-            mainMenuSelection = atoi(mainMenuInput);
-        }    
-
-    return mainMenuSelection;
+    return numberOfGuesses - 1;
 }
