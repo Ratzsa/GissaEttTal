@@ -22,7 +22,7 @@ int main()
     if(pScores == NULL)
     {
         FILE *pScores = fopen("score.low", "w");
-        fprintf(pScores, "Bettan\n50\nCharlie\n60\nTomtom\n70\nFrank\n80\nMona\n90");
+        fprintf(pScores, "Bettan\n50\nCharlie\n60\nTomtom\n70\nFrank\n80\nMona\n90\n");
     }
     fclose(pScores);
 
@@ -45,35 +45,53 @@ int main()
     int lineCount = 0;
     // char buffer[255];
     
+
+    /////////////
+    ///////////// FUNKAR KANSKE TYP? ////////////////////
+    /*
     while (fgets(lowScoreValues[lineCount], 30, pScores))
     {
-        lowScoreValues[lineCount][strlen(lowScoreValues[lineCount]) - 1] = '\0';
+        lowScoreValues[lineCount][strlen(lowScoreValues[lineCount])-1] = '\0';
         lineCount++;
     }
     fclose(pScores);
+    */
+    ///////////////////////////////////////////////////////
 
-    int scoreMarker = 0;
+    while(!feof(pScores) && !ferror(pScores))
+    {
+        if(fgets(lowScoreValues[lineCount], 30, pScores) != NULL)
+        lineCount++;
+    }
+    fclose(pScores);
+    // str[strlen(str)-1] = '\0';
     for(int i = 0; i < 10; i++)
     {
-        if(i % 2 == 0)
-        {
-            strcpy(&lowScoreNames[i][30], lowScoreValues[i]);
-        }
-        else
-        {
-            lowScoreScores[i] = atoi(&lowScoreValues[i][30]);
-        }
-        
+        lowScoreValues[i][strlen(lowScoreValues[i])-1] = '\0';
     }
 
+    for(int i = 0; i < 10; i++)
+    {
+        strcpy(&lowScoreNames[i], lowScoreValues[i]);
+        i++;        
+        lowScoreScores[i] = atoi(&lowScoreValues[i]);
+    }
+    
 
     printf("\n");
     
     for(int j = 0; j < 10; j++)
     {
-        printf("Values: %s\n", lowScoreValues[j]);
-        printf("Names: %s\n", lowScoreNames[j]);
-        printf("Scores: %d\n", lowScoreScores[j]);
+        printf("Values: %s at len %d\n", lowScoreValues[j], strlen(lowScoreValues[j]));
+        if(j % 2 == 0)
+        {
+            printf("Names: %s\n", lowScoreNames[j]);
+        }
+        else
+        {
+            printf("Scores: %d\n", lowScoreScores[j]);
+        }
+        
     }
 
     /*
