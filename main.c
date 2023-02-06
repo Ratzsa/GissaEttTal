@@ -5,6 +5,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <conio.h>
+#include <string.h>
 
 int gameMechanics();
 void showScores();
@@ -25,10 +26,74 @@ int main()
     }
     fclose(pScores);
 
-    // Variabler för gissningar, svaret, huvudmenyn och om spelet är igång    
+
+    // Variabler för gissningar, svaret, huvudmenyn och om spelet är igång
+        
     bool gameIsRunning = true;
     int mainMenuSelection = 0;    
     char pauseBuffer;
+
+
+    
+    //////////////////////////////////////////////////////
+    // TEST //////////////////////////////////////////////
+    
+    pScores = fopen("score.low", "r");
+    char lowScoreValues[10][30];
+    char lowScoreNames[5][30];
+    int lowScoreScores[5];
+    int lineCount = 0;
+    // char buffer[255];
+    
+    while (fgets(lowScoreValues[lineCount], 30, pScores))
+    {
+        lowScoreValues[lineCount][strlen(lowScoreValues[lineCount]) - 1] = '\0';
+        lineCount++;
+    }
+    fclose(pScores);
+
+    int scoreMarker = 0;
+    for(int i = 0; i < 10; i++)
+    {
+        if(i % 2 == 0)
+        {
+            strcpy(&lowScoreNames[i][30], lowScoreValues[i]);
+        }
+        else
+        {
+            lowScoreScores[i] = atoi(&lowScoreValues[i][30]);
+        }
+        
+    }
+
+
+    printf("\n");
+    
+    for(int j = 0; j < 10; j++)
+    {
+        printf("Values: %s\n", lowScoreValues[j]);
+        printf("Names: %s\n", lowScoreNames[j]);
+        printf("Scores: %d\n", lowScoreScores[j]);
+    }
+
+    /*
+    // fscanf(ftpr, "r%d=%d\n", &n, &var);
+    for (int i = 0; i < 10; i++)
+    {
+        fscanf(pScoresInGame, "%s\n", &lowScoreNames[i]);
+        i++;
+        fscanf(pScoresInGame, "%d\n", &lowScoreScores[i]);
+    }
+
+    for(int j = 0; j < 5; j++)
+    {
+        printf("%s\t%d\n", lowScoreNames[j], lowScoreScores[j]);
+    }
+    fclose(pScores);
+
+    */
+    //////////////////////////////////////////////////////
+    // TEST //////////////////////////////////////////////
 
     while(gameIsRunning)
     {
