@@ -7,8 +7,9 @@
 #include <conio.h>
 #include <string.h>
 
-int gameMechanics();
+int gameMechanics(int lowScoreScores[], char lowScoreNames[][30]);
 void showScores(int lowScoreScores[], char lowScoreNames[][30]);
+void updateScores(int lowScoreScores[], char lowScoreNames[][30], int numberOfGuesses);
 
 // Konstanter för MIN och MAX
 const int MINROLL = 1;
@@ -17,8 +18,8 @@ const int MAXROLL = 100;
 int main()
 {
     // TODO
-    // Lägg till fråga om spelaren vill spela igen efter varje omgång och
-    // gå bara vidare om användaren svarar "ja" eller "nej".
+    // *KLAR* Lägg till fråga om spelaren vill spela igen efter varje omgång och
+    // *KLAR* gå bara vidare om användaren svarar "ja" eller "nej".
     // Lägg till funktion för att jämföra spelarens poäng med lowscorelistan.
     // Om funktionen ovan ser att spelarens poäng är lägre än någon/några
     // i lowscorelistan, lägg in spelaren på rätt plats och skriv in listan
@@ -99,7 +100,7 @@ int main()
         switch(mainMenuSelection)
         {
         case 1:
-        numberOfGuesses = gameMechanics();
+        numberOfGuesses = gameMechanics(lowScoreScores, lowScoreNames);
         printf("%d\n", numberOfGuesses);
         mainMenuSelection = 0;
         break;
@@ -114,59 +115,98 @@ int main()
         gameIsRunning = false;
         break;
         }
-    }
-    
+    }    
     return 0;
 }
 
-int gameMechanics()
+// Själva spelet
+int gameMechanics(int lowScoreScores[], char lowScoreNames[][30])
 {
+    // Variabler som behövs
     int randomNumber;
     char playerInput[5];
     int playerGuess;
-    int numberOfGuesses = 1;
-    // Generera random seed och sätt ett slumptal mellan 1 och 100 i randomNumber
-    srand(time(0));
-    randomNumber = (rand() % MAXROLL) + MINROLL;
-    system("cls");
+    int numberOfGuesses;
+    int endGame = 2;
+    int answerQuestion;
+    char endGameAnswer[100];
 
-    do
+    while(endGame != 1)
     {
-        printf("Skriv in din gissning.\nGissning: ");
-        scanf(" %s", &playerInput);
-        playerGuess = atoi(playerInput);
-                
-        if(playerGuess < 1 || playerGuess > 100)
-        {
-            printf("Gissa på ett nummer från 1 till 100.\n");
-        }
-        else if(playerGuess < randomNumber)
-        {
-            printf("Talet är högre!\n");
-        }
-        else if (playerGuess > randomNumber)
-        {
-            printf("Talet är lägre!\n");
-        }
-        else
-        {
-            printf("Rätt! Bra gissat.\nDu gissade rätt på %d försök.\nTryck Enter för att fortsätta.\n", numberOfGuesses);
-        }
-        numberOfGuesses++;
-    } while (playerGuess != randomNumber);
+        // Generera random seed och sätt ett slumptal mellan 1 och 100 i randomNumber
+        srand(time(0));
+        randomNumber = (rand() % MAXROLL) + MINROLL;
+        system("cls");
+        numberOfGuesses = 0;
+        answerQuestion = 1;
 
-    return numberOfGuesses - 1;
+        do
+        {
+            printf("Skriv in din gissning.\nGissning: ");
+            scanf(" %s", &playerInput);
+            playerGuess = atoi(playerInput);
+                    
+            if(playerGuess < 1 || playerGuess > 100)
+            {
+                printf("Gissa på ett nummer från 1 till 100.\n");
+            }
+            else if(playerGuess < randomNumber)
+            {
+                printf("Talet är högre!\n");
+            }
+            else if (playerGuess > randomNumber)
+            {
+                printf("Talet är lägre!\n");
+            }
+            numberOfGuesses++;
+        }while (playerGuess != randomNumber);
+
+        printf("Rätt! Bra gissat.\nDu gissade rätt på %d försök.\n", numberOfGuesses);
+
+        while(answerQuestion != 0)
+        {
+            printf("Vill du spela igen? (Ja/Nej): ");
+            scanf(" %s", endGameAnswer);
+            tolower(endGameAnswer);
+
+            if(!strcmp(endGameAnswer, "ja"))
+            {
+                answerQuestion = 0;
+            }
+            else if(!strcmp(endGameAnswer, "nej"))
+            {
+                answerQuestion = 0;
+                endGame = 1;
+            }
+        }
+    }
+
+    
+    
+
+    updateScores(lowScoreScores, lowScoreNames, numberOfGuesses);
+
+    return numberOfGuesses;
 }
 
+// Skriv ut low-score-listan
 void showScores(int lowScoreScores[], char lowScoreNames[][30])
 {
     printf("Low-Score-Listan! Lägre är bättre!\n");
     for(int i = 0; i < 5; i++)
     {
-        printf("%d: %s\t%d\n", i+1, lowScoreNames[i], lowScoreScores[i]);
+        printf("%d: %-30s\t%d\n", i+1, lowScoreNames[i], lowScoreScores[i]);
     }
     printf("Slå någons poäng för att komma in på listan.\n");
     scanf(" %c");
 
     return;    
+}
+
+// Jämför antal gissningar med low-score-listan och uppdatera arrayerna.
+// Om antalet gissningar är lägre än någon på listan, uppdatera listan och
+// skriv in listan i filen igen.
+void updateScores(int lowScoreScores[], char lowScoreNames[][30], int numberOfGuesses)
+{
+    return;
 }
