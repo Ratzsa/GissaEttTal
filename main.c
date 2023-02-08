@@ -8,7 +8,7 @@
 #include <string.h>
 
 int gameMechanics();
-void showScores();
+void showScores(int lowScoreScores[], char lowScoreNames[][30]);
 
 // Konstanter för MIN och MAX
 const int MINROLL = 1;
@@ -16,6 +16,18 @@ const int MAXROLL = 100;
 
 int main()
 {
+    // TODO
+    // Lägg till fråga om spelaren vill spela igen efter varje omgång och
+    // gå bara vidare om användaren svarar "ja" eller "nej".
+    // Lägg till funktion för att jämföra spelarens poäng med lowscorelistan.
+    // Om funktionen ovan ser att spelarens poäng är lägre än någon/några
+    // i lowscorelistan, lägg in spelaren på rätt plats och skriv in listan
+    // i filen.
+    // VID TID ÖVER
+    // Ordna listan på först lowscore och sedan tid spenderat på gissningar.
+    // Hitta funktioner för tidsmätning i C.
+
+
     // Filhantering, skapa fil för lowscore om den inte finns
     FILE *pScores = fopen("score.low", "r");
     char buffer[255];
@@ -55,9 +67,7 @@ int main()
 
     for(int i = 0; i < 5; i++)
     {
-        printf("strcpy till lowScoreNames[%d]\n", i);
-        strcpy(lowScoreNames[i], lowScoreValues[i * 2 + 0]);
-        printf("skriver till lowScoreScores[%d]\n", i);        
+        strcpy(lowScoreNames[i], lowScoreValues[i * 2 + 0]);    
         lowScoreScores[i] = atoi(&lowScoreValues[i * 2 + 1]);
     }
     
@@ -70,6 +80,7 @@ int main()
         printf("Scores: %d\n", lowScoreScores[i]);
     }
 
+    // Huvudmenyn, välj en funktion med switch-satser
     while(gameIsRunning)
     {
         char mainMenuInput[5];
@@ -94,7 +105,7 @@ int main()
         break;
 
         case 2:
-        showScores();
+        showScores(lowScoreScores, lowScoreNames);
         mainMenuSelection = 0;
         break;
 
@@ -147,24 +158,15 @@ int gameMechanics()
     return numberOfGuesses - 1;
 }
 
-void showScores()
+void showScores(int lowScoreScores[], char lowScoreNames[][30])
 {
-    char scoreNames[5];
-    int scoreScores[5];
-    FILE *pScores = fopen("score.low", "r");
-    char buffer[255];
-    // fscanf(ftpr, "r%d=%d\n", &n, &var);
-    for (int i = 0; i < 5; i++)
+    printf("Low-Score-Listan! Lägre är bättre!\n");
+    for(int i = 0; i < 5; i++)
     {
-        fscanf(pScores, "%s", &scoreNames[i]);
-        fscanf(pScores, "%d", &scoreScores[i]);
+        printf("%d: %s\t%d\n", i+1, lowScoreNames[i], lowScoreScores[i]);
     }
+    printf("Slå någons poäng för att komma in på listan.\n");
+    scanf(" %c");
 
-    for(int j = 0; j < 5; j++)
-    {
-        printf("%s\t%d\n", scoreNames[j], scoreScores[j]);
-    }
-    fclose(pScores);
-    return;
-    
+    return;    
 }
