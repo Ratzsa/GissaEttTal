@@ -21,8 +21,8 @@ int main()
     char buffer[255];
     if(pScores == NULL)
     {
-        FILE *pScores = fopen("score.low", "w");
-        fprintf(pScores, "Bettan\n50\nCharlie\n60\nTomtom\n70\nFrank\n80\nMona\n90\n");
+        pScores = fopen("score.low", "w");
+        fprintf(pScores, "Bettan\n50\nCharlie\n60\nTomtom\n70\nFrank\n80\nMona\n90\nBREAK");
     }
     fclose(pScores);
 
@@ -32,86 +32,43 @@ int main()
     bool gameIsRunning = true;
     int mainMenuSelection = 0;    
     char pauseBuffer;
-
-
-    
-    //////////////////////////////////////////////////////
-    // TEST //////////////////////////////////////////////
     
     pScores = fopen("score.low", "r");
     char lowScoreValues[10][30];
     char lowScoreNames[5][30];
     int lowScoreScores[5];
     int lineCount = 0;
-    // char buffer[255];
-    
-
-    /////////////
-    ///////////// FUNKAR KANSKE TYP? ////////////////////
-    /*
-    while (fgets(lowScoreValues[lineCount], 30, pScores))
-    {
-        lowScoreValues[lineCount][strlen(lowScoreValues[lineCount])-1] = '\0';
-        lineCount++;
-    }
-    fclose(pScores);
-    */
-    ///////////////////////////////////////////////////////
 
     while(!feof(pScores) && !ferror(pScores))
     {
         if(fgets(lowScoreValues[lineCount], 30, pScores) != NULL)
-        lineCount++;
+        {
+            lineCount++;
+        }
     }
     fclose(pScores);
-    // str[strlen(str)-1] = '\0';
+
     for(int i = 0; i < 10; i++)
     {
         lowScoreValues[i][strlen(lowScoreValues[i])-1] = '\0';
     }
 
-    for(int i = 0; i < 10; i++)
+    for(int i = 0; i < 5; i++)
     {
-        strcpy(&lowScoreNames[i], lowScoreValues[i]);
-        i++;        
-        lowScoreScores[i] = atoi(&lowScoreValues[i]);
+        printf("strcpy till lowScoreNames[%d]\n", i);
+        strcpy(lowScoreNames[i], lowScoreValues[i * 2 + 0]);
+        printf("skriver till lowScoreScores[%d]\n", i);        
+        lowScoreScores[i] = atoi(&lowScoreValues[i * 2 + 1]);
     }
     
 
     printf("\n");
     
-    for(int j = 0; j < 10; j++)
+    for(int i = 0; i < 5; i++)
     {
-        printf("Values: %s at len %d\n", lowScoreValues[j], strlen(lowScoreValues[j]));
-        if(j % 2 == 0)
-        {
-            printf("Names: %s\n", lowScoreNames[j]);
-        }
-        else
-        {
-            printf("Scores: %d\n", lowScoreScores[j]);
-        }
-        
+        printf("Names: %s\n", lowScoreNames[i]);
+        printf("Scores: %d\n", lowScoreScores[i]);
     }
-
-    /*
-    // fscanf(ftpr, "r%d=%d\n", &n, &var);
-    for (int i = 0; i < 10; i++)
-    {
-        fscanf(pScoresInGame, "%s\n", &lowScoreNames[i]);
-        i++;
-        fscanf(pScoresInGame, "%d\n", &lowScoreScores[i]);
-    }
-
-    for(int j = 0; j < 5; j++)
-    {
-        printf("%s\t%d\n", lowScoreNames[j], lowScoreScores[j]);
-    }
-    fclose(pScores);
-
-    */
-    //////////////////////////////////////////////////////
-    // TEST //////////////////////////////////////////////
 
     while(gameIsRunning)
     {
