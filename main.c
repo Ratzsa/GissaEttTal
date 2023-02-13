@@ -7,17 +7,18 @@
 #include <conio.h>
 #include <string.h>
 #include <windows.h>
-
-int gameMechanics(int lowScoreScores[], char lowScoreNames[][30]);
-void showScores(int lowScoreScores[], char lowScoreNames[][30]);
-void updateScores(int lowScoreScores[], char lowScoreNames[][30], int numberOfGuesses);
-void hitEnter();
+#include <locale.h>
 
 // Konstanter för MIN och MAX
 const int MINROLL = 1;
 const int MAXROLL = 100;
 const int MAXSTRING = 30;
 const int MAXELEMENTS = 5;
+
+int gameMechanics(int lowScoreScores[], char lowScoreNames[][MAXSTRING]);
+void showScores(int lowScoreScores[], char lowScoreNames[][MAXSTRING]);
+void updateScores(int lowScoreScores[], char lowScoreNames[][MAXSTRING], int numberOfGuesses);
+void hitEnter();
 
 int main()
 {
@@ -32,6 +33,7 @@ int main()
     // Ordna listan på först lowscore och sedan tid spenderat på gissningar.
     // Hitta funktioner för tidsmätning i C.
 
+    SetConsoleOutputCP(65001);
 
     // Filhantering, skapa fil för lowscore om den inte finns
     FILE *pScores = fopen("score.low", "r");
@@ -117,6 +119,9 @@ int main()
             case 3:
                 printf("Tack för att du spelade!\n");
                 gameIsRunning = false;
+                break;
+
+            default:
                 break;
         }
     }    
@@ -229,10 +234,11 @@ void updateScores(int lowScoreScores[], char lowScoreNames[][MAXSTRING], int num
     int marker = 0;
     char enterName[MAXSTRING];
     char tempInput[10];
+    char updatedList[200];
 
     for(int i = 0; i < MAXELEMENTS; i++)
     {
-        if(numberOfGuesses > lowScoreScores[i]);
+        if(numberOfGuesses < lowScoreScores[i]);
         {
             break;
         }
@@ -252,7 +258,31 @@ void updateScores(int lowScoreScores[], char lowScoreNames[][MAXSTRING], int num
         lowScoreScores[marker] = numberOfGuesses;
         strcpy(lowScoreNames[marker], enterName);
     }
-    showScores(lowScoreScores, lowScoreNames);
+    
+    for(int i = 0; i < 5; i++)
+    {
+        /*
+        sprintf(str, "%d", 42);
+        strcat(strcpy(buffer, str1), num);
+        printf("%s\n", buffer);
+        free(num);
+        */
+       strcat(updatedList, lowScoreNames[i]);
+       strcat(updatedList, "\n");
+       sprintf(tempInput, "%d", lowScoreScores[i]);
+       strcat(updatedList, tempInput);
+       strcat(updatedList, "\n");
+    }
+    strcat(updatedList, "BREAK");
+
+    FILE *pScores = fopen("score.low", "r");
+    pScores = fopen("score.low", "w");
+    fprintf(pScores, updatedList);
+    fclose(pScores);
+    
+
+    printf("%s\n", updatedList);
+    hitEnter();
     fflush(stdin);
     return;
 }
