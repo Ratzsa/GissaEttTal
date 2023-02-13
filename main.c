@@ -6,14 +6,18 @@
 #include <stdbool.h>
 #include <conio.h>
 #include <string.h>
+#include <windows.h>
 
 int gameMechanics(int lowScoreScores[], char lowScoreNames[][30]);
 void showScores(int lowScoreScores[], char lowScoreNames[][30]);
 void updateScores(int lowScoreScores[], char lowScoreNames[][30], int numberOfGuesses);
+void hitEnter();
 
 // Konstanter för MIN och MAX
 const int MINROLL = 1;
 const int MAXROLL = 100;
+const int MAXSTRING = 30;
+const int MAXELEMENTS = 5;
 
 int main()
 {
@@ -47,14 +51,14 @@ int main()
     char pauseBuffer;
     
     pScores = fopen("score.low", "r");
-    char lowScoreValues[10][30];
-    char lowScoreNames[5][30];
-    int lowScoreScores[5];
+    char lowScoreValues[10][MAXSTRING];
+    char lowScoreNames[MAXELEMENTS][MAXSTRING];
+    int lowScoreScores[MAXELEMENTS];
     int lineCount = 0;
 
     while(!feof(pScores) && !ferror(pScores))
     {
-        if(fgets(lowScoreValues[lineCount], 30, pScores) != NULL)
+        if(fgets(lowScoreValues[lineCount], MAXSTRING, pScores) != NULL)
         {
             lineCount++;
         }
@@ -69,7 +73,7 @@ int main()
     for(int i = 0; i < 5; i++)
     {
         strcpy(lowScoreNames[i], lowScoreValues[i * 2 + 0]);    
-        lowScoreScores[i] = atoi(&lowScoreValues[i * 2 + 1]);
+        lowScoreScores[i] = atoi(lowScoreValues[i * 2 + 1]);
     }
     
 
@@ -99,32 +103,32 @@ int main()
             
         switch(mainMenuSelection)
         {
-        case 1:
-        numberOfGuesses = gameMechanics(lowScoreScores, lowScoreNames);
-        printf("%d\n", numberOfGuesses);
-        mainMenuSelection = 0;
-        break;
+            case 1:
+                numberOfGuesses = gameMechanics(lowScoreScores, lowScoreNames);
+                printf("%d\n", numberOfGuesses);
+                mainMenuSelection = 0;
+                break;
 
-        case 2:
-        showScores(lowScoreScores, lowScoreNames);
-        mainMenuSelection = 0;
-        break;
+            case 2:
+                showScores(lowScoreScores, lowScoreNames);
+                mainMenuSelection = 0;
+                break;
 
-        case 3:
-        printf("Tack för att du spelade!\n");
-        gameIsRunning = false;
-        break;
+            case 3:
+                printf("Tack för att du spelade!\n");
+                gameIsRunning = false;
+                break;
         }
     }    
     return 0;
 }
 
 // Själva spelet
-int gameMechanics(int lowScoreScores[], char lowScoreNames[][30])
+int gameMechanics(int lowScoreScores[], char lowScoreNames[][MAXSTRING])
 {
     // Variabler som behövs
     int randomNumber;
-    char playerInput[5];
+    char playerInput[MAXELEMENTS];
     int playerGuess;
     int numberOfGuesses;
     int endGame = 2;
@@ -162,12 +166,17 @@ int gameMechanics(int lowScoreScores[], char lowScoreNames[][30])
         }while (playerGuess != randomNumber);
 
         printf("Rätt! Bra gissat.\nDu gissade rätt på %d försök.\n", numberOfGuesses);
+        updateScores(lowScoreScores, lowScoreNames, numberOfGuesses);
 
         while(answerQuestion != 0)
         {
             printf("Vill du spela igen? (Ja/Nej): ");
             scanf(" %s", endGameAnswer);
-            tolower(endGameAnswer);
+            for (int i = 0; i < strlen(endGameAnswer); i++)
+            {
+                endGameAnswer[i] = tolower(endGameAnswer[i]);
+            }
+            printf("%s\n", endGameAnswer);
 
             if(!strcmp(endGameAnswer, "ja"))
             {
@@ -182,9 +191,6 @@ int gameMechanics(int lowScoreScores[], char lowScoreNames[][30])
     }
 
     
-    
-
-    updateScores(lowScoreScores, lowScoreNames, numberOfGuesses);
 
     return numberOfGuesses;
 }
@@ -206,7 +212,35 @@ void showScores(int lowScoreScores[], char lowScoreNames[][30])
 // Jämför antal gissningar med low-score-listan och uppdatera arrayerna.
 // Om antalet gissningar är lägre än någon på listan, uppdatera listan och
 // skriv in listan i filen igen.
-void updateScores(int lowScoreScores[], char lowScoreNames[][30], int numberOfGuesses)
+void updateScores(int lowScoreScores[], char lowScoreNames[][MAXSTRING], int numberOfGuesses)
 {
+    int marker = 0;
+    char enterName[MAXSTRING];
+    char tempInput[10];
+
+    for(int i = 0; i < MAXELEMENTS; i++)
+    {
+        if(numberOfGuesses < lowScoreScores[i]);
+        {
+            break;
+        }
+        marker++;
+    }
+
+    if(marker < 5)
+    {
+        printf("Du tog dig in på lowscore-listan! Skriv in ditt namn: ");
+        scanf(" %s", enterName);
+
+        for(int i = 4; i > marker; i--)
+        {
+            lowScoreScores[i] = lowScoreScores[i-1];
+            strcpy(lowScoreNames[i], lowScoreNames[i-1]);
+        }
+        lowScoreScores[marker] = numberOfGuesses;
+        strcpy(lowScoreNames[marker], enterName);
+    }
+    showScores(lowScoreScores, lowScoreNames);
+    fflush(stdin);
     return;
 }
