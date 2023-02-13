@@ -236,12 +236,12 @@ void updateScores(int lowScoreScores[], char lowScoreNames[][MAXSTRING], int num
     char tempInput[10];
     char updatedList[200];
 
-    for(int i = 0; i < MAXELEMENTS; i++)
+    for(int i = 0; i < 5; i++)
     {
-        if(numberOfGuesses < lowScoreScores[i]);
+        if(numberOfGuesses < lowScoreScores[i])
         {
             break;
-        }
+        }   
         marker++;
     }
 
@@ -260,18 +260,13 @@ void updateScores(int lowScoreScores[], char lowScoreNames[][MAXSTRING], int num
     }
     
     for(int i = 0; i < 5; i++)
-    {
-        /*
-        sprintf(str, "%d", 42);
-        strcat(strcpy(buffer, str1), num);
-        printf("%s\n", buffer);
-        free(num);
-        */
-       strcat(updatedList, lowScoreNames[i]);
-       strcat(updatedList, "\n");
-       sprintf(tempInput, "%d", lowScoreScores[i]);
-       strcat(updatedList, tempInput);
-       strcat(updatedList, "\n");
+    {    
+        strcat(updatedList, lowScoreNames[i]);
+        strcat(updatedList, "\n");
+        sprintf(tempInput, "%d", lowScoreScores[i]);
+        strcat(updatedList, tempInput);
+        strcat(updatedList, "\n");       
+      // snprintf(prefix, sizeof(prefix), "%s: %s: %s", argv[0], cmd_argv[0], cmd_argv[1]);
     }
     strcat(updatedList, "BREAK");
 
@@ -279,8 +274,6 @@ void updateScores(int lowScoreScores[], char lowScoreNames[][MAXSTRING], int num
     pScores = fopen("score.low", "w");
     fprintf(pScores, updatedList);
     fclose(pScores);
-    
-
     printf("%s\n", updatedList);
     hitEnter();
     fflush(stdin);
@@ -299,4 +292,5 @@ void hitEnter()
         break;
         }
     }
+    return;
 }
