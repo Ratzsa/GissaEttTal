@@ -35,7 +35,6 @@ int main()
 
     // Filhantering, skapa fil för lowscore om den inte finns
     FILE *pScores = fopen("score.low", "r");
-    char buffer[255];
     if(pScores == NULL)
     {
         pScores = fopen("score.low", "w");
@@ -93,6 +92,7 @@ int main()
     
         while(mainMenuSelection == 0)
             {
+                system("cls");
                 printf("\t*** GISSA ETT TAL ***\n");
                 printf("\tHuvudmeny\n\n");
                 printf("Välj ett alternativ med 1, 2 eller 3.\n");
@@ -129,42 +129,50 @@ int gameMechanics(int lowScoreScores[], char lowScoreNames[][MAXSTRING])
     // Variabler som behövs
     int randomNumber;
     char playerInput[MAXELEMENTS];
-    int playerGuess;
-    int numberOfGuesses;
+    int playerGuess = 0;
+    int numberOfGuesses = 0;
     int endGame = 2;
     int answerQuestion;
     char endGameAnswer[100];
+    int tempIfErrorInput = 0;
+
+    srand(time(0));
 
     while(endGame != 1)
     {
-        // Generera random seed och sätt ett slumptal mellan 1 och 100 i randomNumber
-        srand(time(0));
         randomNumber = (rand() % MAXROLL) + MINROLL;
-        system("cls");
         numberOfGuesses = 0;
         answerQuestion = 1;
 
         do
         {
-            printf("Skriv in din gissning.\nGissning: ");
+            system("cls");
+            if(numberOfGuesses != 0)
+            {
+                if(playerGuess < 1 || playerGuess > 100)
+                {
+                    playerGuess = tempIfErrorInput;
+                    printf("Gissa på ett nummer från 1 till 100.\n");
+                }
+                printf("Gissning: %d\n", playerGuess);
+                
+                if(playerGuess < randomNumber)
+                {
+                    printf("Talet är högre!\n");
+                }
+                else if (playerGuess > randomNumber)
+                {
+                    printf("Talet är lägre!\n");
+                }
+            }
+            tempIfErrorInput = playerGuess;
+            printf("Skriv in din gissning: ");
             scanf(" %s", &playerInput);
             playerGuess = atoi(playerInput);
-                    
-            if(playerGuess < 1 || playerGuess > 100)
-            {
-                printf("Gissa på ett nummer från 1 till 100.\n");
-            }
-            else if(playerGuess < randomNumber)
-            {
-                printf("Talet är högre!\n");
-            }
-            else if (playerGuess > randomNumber)
-            {
-                printf("Talet är lägre!\n");
-            }
             numberOfGuesses++;
         }while (playerGuess != randomNumber);
 
+        system("cls");
         printf("Rätt! Bra gissat.\nDu gissade rätt på %d försök.\n", numberOfGuesses);
         updateScores(lowScoreScores, lowScoreNames, numberOfGuesses);
 
@@ -187,6 +195,7 @@ int gameMechanics(int lowScoreScores[], char lowScoreNames[][MAXSTRING])
                 answerQuestion = 0;
                 endGame = 1;
             }
+            fflush(stdin);
         }
     }
 
@@ -198,14 +207,17 @@ int gameMechanics(int lowScoreScores[], char lowScoreNames[][MAXSTRING])
 // Skriv ut low-score-listan
 void showScores(int lowScoreScores[], char lowScoreNames[][30])
 {
+    system("cls");
+    fflush(stdin);
     printf("Low-Score-Listan! Lägre är bättre!\n");
     for(int i = 0; i < 5; i++)
     {
         printf("%d: %-30s\t%d\n", i+1, lowScoreNames[i], lowScoreScores[i]);
     }
-    printf("Slå någons poäng för att komma in på listan.\n");
-    scanf(" %c");
-
+    printf("Slå någons poäng för att komma in på listan. Tryck enter för att fortsätta.\n");
+    hitEnter();
+    fflush(stdin);
+    system("cls");
     return;    
 }
 
@@ -220,7 +232,7 @@ void updateScores(int lowScoreScores[], char lowScoreNames[][MAXSTRING], int num
 
     for(int i = 0; i < MAXELEMENTS; i++)
     {
-        if(numberOfGuesses < lowScoreScores[i]);
+        if(numberOfGuesses > lowScoreScores[i]);
         {
             break;
         }
@@ -243,4 +255,18 @@ void updateScores(int lowScoreScores[], char lowScoreNames[][MAXSTRING], int num
     showScores(lowScoreScores, lowScoreNames);
     fflush(stdin);
     return;
+}
+
+void hitEnter()
+{
+    while (1) 
+    {
+        char pressEnter[MAXSTRING];
+        gets(pressEnter);
+        if(strcmp(pressEnter,"") == 0 || strcmp(pressEnter,"") != 0)
+        {
+        Sleep(100);
+        break;
+        }
+    }
 }
