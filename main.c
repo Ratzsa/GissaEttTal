@@ -15,6 +15,7 @@ const int MAXROLL = 100;
 const int MAXSTRING = 30;
 const int MAXELEMENTS = 5;
 
+// Funktioner
 int gameMechanics(int lowScoreScores[], char lowScoreNames[][MAXSTRING]);
 void showScores(int lowScoreScores[], char lowScoreNames[][MAXSTRING]);
 void updateScores(int lowScoreScores[], char lowScoreNames[][MAXSTRING], int numberOfGuesses);
@@ -25,22 +26,24 @@ int main()
     // TODO
     // *KLAR* Lägg till fråga om spelaren vill spela igen efter varje omgång och
     // *KLAR* gå bara vidare om användaren svarar "ja" eller "nej".
-    // Lägg till funktion för att jämföra spelarens poäng med lowscorelistan.
-    // Om funktionen ovan ser att spelarens poäng är lägre än någon/några
-    // i lowscorelistan, lägg in spelaren på rätt plats och skriv in listan
-    // i filen.
+    // *KLAR* Lägg till funktion för att jämföra spelarens poäng med lowscorelistan.
+    // *KLAR* Om funktionen ovan ser att spelarens poäng är lägre än någon/några
+    // *KLAR* i lowscorelistan, lägg in spelaren på rätt plats och skriv in listan
+    // *KLAR* i filen.
     // VID TID ÖVER
     // Ordna listan på först lowscore och sedan tid spenderat på gissningar.
     // Hitta funktioner för tidsmätning i C.
 
-    SetConsoleOutputCP(65001);
+    // För att skriva ut svenska tecken, åäö
+    // SetConsoleOutputCP(65001); // Har jag den skriver inte filen ut rätt tecken
 
     // Filhantering, skapa fil för lowscore om den inte finns
     FILE *pScores = fopen("score.low", "r");
-    if(pScores == NULL)
+    if(pScores == NULL) // Om filen inte finns, skapa den och skriv in en topplista
     {
         pScores = fopen("score.low", "w");
-        fprintf(pScores, "Bettan\n50\nCharlie\n60\nTomtom\n70\nFrank\n80\nMona\n90\nBREAK");
+        // fprintf(pScores, "Bettan\n50\nCharlie\n60\nTomtom\n70\nFrank\n80\nMona\n90\nBREAK");
+        fprintf(pScores, "\n\n\n\n\n\n\n\n\n\nBREAK");
     }
     fclose(pScores);
 
@@ -210,14 +213,19 @@ int gameMechanics(int lowScoreScores[], char lowScoreNames[][MAXSTRING])
 }
 
 // Skriv ut low-score-listan
-void showScores(int lowScoreScores[], char lowScoreNames[][30])
+void showScores(int lowScoreScores[], char lowScoreNames[][MAXSTRING])
 {
     system("cls");
     fflush(stdin);
     printf("Low-Score-Listan! Lägre är bättre!\n");
     for(int i = 0; i < 5; i++)
     {
-        printf("%d: %-30s\t%d\n", i+1, lowScoreNames[i], lowScoreScores[i]);
+        printf("%d: %-30s\t", i+1, lowScoreNames[i]);
+        if(lowScoreScores[i] != 0)
+        {
+            printf("%d", lowScoreScores[i]);
+        }
+        printf("\n");
     }
     printf("Slå någons poäng för att komma in på listan. Tryck enter för att fortsätta.\n");
     hitEnter();
@@ -236,13 +244,17 @@ void updateScores(int lowScoreScores[], char lowScoreNames[][MAXSTRING], int num
     char tempInput[10];
     char updatedList[200];
 
-    for(int i = 0; i < 5; i++)
+    for(int i = 0; i < MAXELEMENTS; i++)
     {
         if(numberOfGuesses < lowScoreScores[i])
         {
             break;
+        }
+        if(lowScoreScores[i] != 0)
+        {
+            marker++;
         }   
-        marker++;
+        
     }
 
     if(marker < 5)
@@ -274,7 +286,6 @@ void updateScores(int lowScoreScores[], char lowScoreNames[][MAXSTRING], int num
     pScores = fopen("score.low", "w");
     fprintf(pScores, updatedList);
     fclose(pScores);
-    printf("%s\n", updatedList);
     hitEnter();
     fflush(stdin);
     return;
