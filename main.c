@@ -1,13 +1,15 @@
+/*
+Encoding: ISO 8859-15
+*/
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
 #include <stdbool.h>
-#include <conio.h>
 #include <string.h>
 #include <windows.h>
-#include <locale.h>
 // Överdrivet många headerfiler
 
 // Konstanter för MIN och MAX
@@ -31,102 +33,16 @@ lowScore_t scores[5];
 void gameMechanics();
 void showScores();
 void updateScores(int numberOfGuesses);
-void writeToFile(char *p, size_t size);
-void readFromFile(char *p, size_t size);
+void writeToFile(void *scorelist, size_t size);
+void readFromFile(void *scorelist, size_t size);
 void hitEnter();
+void clearConsole();
 
 int main()
 {
-    // TODO
-    // *KLAR* Lägg till fråga om spelaren vill spela igen efter varje omgång och
-    // *KLAR* går bara vidare om användaren svarar "ja" eller "nej".
-    // *KLAR* Lägg till funktion för att jämföra spelarens poäng med lowscorelistan.
-    // *KLAR* Om funktionen ovan ser att spelarens poäng är lägre än någon/några
-    // *KLAR* i lowscorelistan, lägg in spelaren på rätt plats och skriv in listan
-    // *KLAR* i filen.
-    // Lägg till tid i lowscore!
     // VID TID ÖVER
     // Ordna listan på först lowscore och sedan tid spenderat på gissningar.
     // Hitta funktioner för tidsmätning i C.
-
-    
-
-    /*
-    // Filhantering, skapa fil för lowscore om den inte finns
-    FILE *pScores = fopen("score.low", "r");
-    if(pScores == NULL) // Om filen inte finns, skapa den och skriv in en (tom) topplista
-    {
-        pScores = fopen("score.low", "w");
-        fprintf(pScores, "\n\n\n\n\n\n\n\n\n\nBREAK");
-    }
-    fclose(pScores);
-
-    // Skapa fil fÃ¶r att spara tider om den inte finns
-    FILE *pTimes = fopen("time.low", "r");
-    if(pTimes == NULL) // Om filen inte finns, skapa den och skriv in en (tom) tidslista
-    {
-        pTimes = fopen("time.low", "w");
-        fprintf(pTimes, "\n\n\n\n\nBREAK");
-    }
-    fclose(pTimes);
-    */
-
-    // Variabler fÃ¶r gissningar, svaret, huvudmenyn och om spelet Ã¤r igÃ¥ng
-    
-    
-    /*
-    char lowScoreValues[10][MAXSTRING];
-    char lowScoreTimeBuffer[10][MAXSTRING];
-    char lowScoreNames[MAXELEMENTS][MAXSTRING];
-    int lowScoreScores[MAXELEMENTS];
-    int lowScoreTimes[MAXELEMENTS];
-    int lineCount = 0;
-
-    pScores = fopen("score.low", "r"); // Ã–ppna filen fÃ¶r att lÃ¤sa topplistan
-    while(!feof(pScores) && !ferror(pScores))
-    {
-        // LÃ¤gg Ã¶ver innehÃ¥llet i filen i en string-array (char[][])
-        // Skulle behÃ¶va lÃ¤ra mig hur man lÃ¤gger Ã¶ver innehÃ¥llet i rÃ¤tt sorts array direkt
-        if(fgets(lowScoreValues[lineCount], MAXSTRING, pScores) != NULL)
-        {
-            lineCount++; // Ã–ka indexnumret
-        }
-    }
-    fclose(pScores);
-
-    lineCount = 0;
-    pTimes = fopen("time.low", "r"); // Ã–ppna filen fÃ¶r att lÃ¤sa tidslistan
-    while(!feof(pTimes) && !ferror(pTimes))
-    {
-        if(fgets(lowScoreTimeBuffer[lineCount], MAXSTRING, pTimes) != NULL)
-        {
-            lineCount++;
-        }
-    }
-    fclose(pScores);
-
-    for(int i = 0; i < 10; i++)
-    {
-        lowScoreValues[i][strlen(lowScoreValues[i])-1] = '\0'; // Tar bort \n frÃ¥n varje element
-    }
-
-    for(int i = 0; i < MAXELEMENTS; i++)
-    {
-        lowScoreTimeBuffer[i][strlen(lowScoreTimeBuffer[i])-1] = '\0';
-    }
-
-    for(int i = 0; i < 5; i++)
-    {
-        strcpy(lowScoreNames[i], lowScoreValues[i * 2 + 0]); // Kopierar namnen till rÃ¤tt array...    
-        lowScoreScores[i] = atoi(lowScoreValues[i * 2 + 1]); // ... och poÃ¤ngen till rÃ¤tt array
-    }
-
-    for(int i = 0; i < 5; i++)
-    {
-        lowScoreTimes[i] = atoi(lowScoreTimeBuffer[i]); // LÃ¤gger in tider som int i rÃ¤tt array
-    }
-
-    */
 
     // För att skriva ut svenska tecken, åäö
     SetConsoleOutputCP(28605);
@@ -149,7 +65,6 @@ int main()
     
         while(mainMenuSelection == 0)
             {
-                // system("cls");
                 clearConsole();
                 printf("\t*** GISSA ETT TAL ***\n");
                 printf("\tHuvudmeny\n\n");
@@ -170,7 +85,6 @@ int main()
                 break;
 
             case 3:
-                // system("cls");
                 clearConsole();
                 printf("Tack för att du spelade!\n");
                 gameIsRunning = false;
@@ -206,7 +120,6 @@ void gameMechanics()
 
         do
         {
-            // system("cls");
             clearConsole();
             if(numberOfGuesses != 0)
             {
@@ -244,7 +157,6 @@ void gameMechanics()
         }while (playerGuess != randomNumber);
 
         clearConsole();
-        // system("cls");
         printf("Rätt! Bra gissat.\nDu gissade rätt på %d försök.\n", numberOfGuesses);
         updateScores(numberOfGuesses);
         
@@ -258,7 +170,6 @@ void gameMechanics()
 // Skriv ut low-score-listan
 void showScores()
 {
-    //system("cls");
     fflush(stdin);
     clearConsole();
 
@@ -272,8 +183,6 @@ void showScores()
             printf("%-25s\t", scores[i].name);
             char printTime[100];
             struct tm *convertedTime;
-            // time_t timeInt = scores[i].times;
-            // time(&timeInt);
             convertedTime = gmtime(&scores[i].time);
             convertedTime->tm_hour++; // För att ha vår tid och inte GMT
             if(convertedTime->tm_hour >= 24)
@@ -283,34 +192,14 @@ void showScores()
             strftime(printTime, 100, "%y-%m-%d %H:%M", convertedTime);
 
             printf("%d\t", scores[i].score);
-            printf("%s", &printTime);
+            printf("%s", printTime);
         }
         printf("\n");
     }
 
-    /*
-    for(int i = 0; i < 5; i++)
-    {
-        printf("%d: %-30s\t", i+1, lowScoreNames[i]);
-        if(lowScoreScores[i] != 0)
-        {
-            char printTime[100];
-            struct tm *convertedTime;
-            time_t timeInt = lowScoreTimes[i];
-            time(&timeInt);
-            convertedTime = localtime(&timeInt);
-            strftime(printTime, 100, "%y-%m-%d %H:%M", convertedTime);
-
-            printf("%d\t", lowScoreScores[i]);
-            printf("%s", &printTime);
-        }
-        printf("\n");
-    }
-    */
     printf("Slå någons poäng för att komma in på listan. Tryck enter för att fortsätta.\n");
     hitEnter();
     fflush(stdin);
-    // system("cls");
     clearConsole();
     return;    
 }
@@ -346,8 +235,6 @@ void updateScores(int numberOfGuesses)
     {
         printf("Du tog dig in på lowscore-listan! Skriv in ditt namn: ");
         scanf(" %25s", enterName);
-        // fgets(name, sizeof(name), stdin);
-        // fgets(enterName, sizeof(enterName), stdin);
 
         for(int i = 4; i > marker; i--)
         {
@@ -355,70 +242,33 @@ void updateScores(int numberOfGuesses)
             scores[i].score = scores[i-1].score;
             strcpy(scores[i].name, scores[i - 1].name);
             scores[i].time = scores[i - 1].time;
-
-            /*
-            lowScoreScores[i] = lowScoreScores[i - 1];
-            strcpy(lowScoreNames[i], lowScoreNames[i - 1]);
-            lowScoreTimes[i] = lowScoreTimes[i - 1];
-            */
         }
+
         // Lägg till namn och poäng på rätt plats i listan
         scores[marker].score = numberOfGuesses;
         strcpy(scores[marker].name, enterName);
         scores[marker].time = timeNow;
 
         writeToFile(scores, sizeof(scores));
-
-        /*
-        for(int i = 0; i < 5; i++)
-        {    
-            strcat(updatedList, lowScoreNames[i]);
-            strcat(updatedList, "\n");
-            sprintf(tempInput, "%d", lowScoreScores[i]);
-            strcat(updatedList, tempInput);
-            strcat(updatedList, "\n");       
-        // snprintf(prefix, sizeof(prefix), "%s: %s: %s", argv[0], cmd_argv[0], cmd_argv[1]); // FÃ¶rsÃ¶k fÃ¥ till fÃ¶r att fÃ¥ mindre kod
-        }
-        strcat(updatedList, "BREAK"); // LÃ¤gger till fÃ¶r att lÃ¶sa problem med inlÃ¤sningen
-
-        for(int i = 0; i < 5; i++)
-        {
-            sprintf(tempTimes, "%d", lowScoreTimes[i]); 
-            strcat(updatedTimes, tempTimes);
-            strcat(updatedTimes, "\n");
-        }
-        strcat(updatedTimes, "BREAK");
-
-        // Skriver in den nya listan i filen
-        FILE *pScores = fopen("score.low", "r");
-        pScores = fopen("score.low", "w");
-        fprintf(pScores, updatedList);
-        fclose(pScores);
-
-        FILE *pTimes = fopen("time.low", "r");
-        pTimes = fopen("time.low", "w");
-        fprintf(pTimes, updatedTimes);
-        fclose(pTimes);
-        */
     }
 
     hitEnter();
     fflush(stdin);
 }
 
-void writeToFile(char *p, size_t size)
+void writeToFile(void *scorelist, size_t size)
 {
     FILE *scoreFile = fopen(fileName, "wb");
-    fwrite(p, size, 1, scoreFile);
+    fwrite(scorelist, size, 1, scoreFile);
     fclose(scoreFile);
 }
 
-void readFromFile(char *p, size_t size)
+void readFromFile(void *scorelist, size_t size)
 {
     FILE *scoreFile = fopen(fileName, "rb");
     if(scoreFile != 0)
     {
-        fread(p, size, 1, scoreFile);
+        fread(scorelist, size, 1, scoreFile);
         fclose(scoreFile);
     }
 }
@@ -439,7 +289,7 @@ void hitEnter()
     return;
 }
 
-void clearConsole(void)
+void clearConsole()
 {
     printf("\x1b[H\x1b[2J\x1b[3J");
 }
