@@ -8,18 +8,19 @@
 #include <string.h>
 #include <windows.h>
 #include <locale.h>
-// √ñverdrivet m√•nga headerfiler
+// ÷verdrivet mÂnga headerfiler
 
-// Konstanter f√∂r MIN och MAX
+// Konstanter fˆr MIN och MAX
 const int MINROLL = 1;
 const int MAXROLL = 100;
 const int MAXSTRING = 30;
 const int MAXELEMENTS = 5;
 const char fileName[] = "scores.low";
 
+// Struct fˆr att spara spelarens lowscore
 typedef struct
 {
-    time_t times;
+    time_t time;
     char name[30];
     int score;
 } lowScore_t;
@@ -37,22 +38,21 @@ void hitEnter();
 int main()
 {
     // TODO
-    // *KLAR* L√§gg till fr√•ga om spelaren vill spela igen efter varje omg√•ng och
-    // *KLAR* g√• bara vidare om anv√§ndaren svarar "ja" eller "nej".
-    // *KLAR* L√§gg till funktion f√∂r att j√§mf√∂ra spelarens po√§ng med lowscorelistan.
-    // *KLAR* Om funktionen ovan ser att spelarens po√§ng √§r l√§gre √§n n√•gon/n√•gra
-    // *KLAR* i lowscorelistan, l√§gg in spelaren p√• r√§tt plats och skriv in listan
+    // *KLAR* L‰gg till frÂga om spelaren vill spela igen efter varje omgÂng och
+    // *KLAR* gÂr bara vidare om anv‰ndaren svarar "ja" eller "nej".
+    // *KLAR* L‰gg till funktion fˆr att j‰mfˆra spelarens po‰ng med lowscorelistan.
+    // *KLAR* Om funktionen ovan ser att spelarens po‰ng ‰r l‰gre ‰n nÂgon/nÂgra
+    // *KLAR* i lowscorelistan, l‰gg in spelaren pÂ r‰tt plats och skriv in listan
     // *KLAR* i filen.
-    // L√§gg till tid i lowscore!
-    // VID TID √ñVER
-    // Ordna listan p√• f√∂rst lowscore och sedan tid spenderat p√• gissningar.
-    // Hitta funktioner f√∂r tidsm√§tning i C.
+    // L‰gg till tid i lowscore!
+    // VID TID ÷VER
+    // Ordna listan pÂ fˆrst lowscore och sedan tid spenderat pÂ gissningar.
+    // Hitta funktioner fˆr tidsm‰tning i C.
 
-    // F√∂r att skriva ut svenska tecken, √•√§√∂
-    // SetConsoleOutputCP(65001); // Har jag den skriver inte filen ut r√§tt tecken
+    
 
     /*
-    // Filhantering, skapa fil f√∂r lowscore om den inte finns
+    // Filhantering, skapa fil fˆr lowscore om den inte finns
     FILE *pScores = fopen("score.low", "r");
     if(pScores == NULL) // Om filen inte finns, skapa den och skriv in en (tom) topplista
     {
@@ -128,15 +128,20 @@ int main()
 
     */
 
+    // Fˆr att skriva ut svenska tecken, Â‰ˆ
+    SetConsoleOutputCP(28605);
+    SetConsoleCP(28605);
+
     bool gameIsRunning = true;
     int mainMenuSelection = 0;
-
     
-
+    // Nollar scores sÂ det inte kommer in nÂn eventuell skr‰pdata
     memset(scores, 0, sizeof(scores));
 
+    // L‰ser in lowscore-listan om den finns sparad
     readFromFile(scores, sizeof(scores));
-    // Huvudmenyn, v√§lj en funktion med switch-satser
+
+    // Huvudmenyn, v‰lj en funktion med switch-satser
     while(gameIsRunning)
     {
         char mainMenuInput[5];
@@ -144,10 +149,11 @@ int main()
     
         while(mainMenuSelection == 0)
             {
-                system("cls");
+                // system("cls");
+                clearConsole();
                 printf("\t*** GISSA ETT TAL ***\n");
                 printf("\tHuvudmeny\n\n");
-                printf("V√§lj ett alternativ med 1, 2 eller 3.\n");
+                printf("V‰lj ett alternativ med 1, 2 eller 3.\n");
                 printf("1. Spela\n2. Lowscorelistan\n3. Avsluta\nVal: ");
                 scanf(" %s", &mainMenuInput);
                 mainMenuSelection = atoi(mainMenuInput);
@@ -164,7 +170,9 @@ int main()
                 break;
 
             case 3:
-                printf("Tack f√∂r att du spelade!\n");
+                // system("cls");
+                clearConsole();
+                printf("Tack fˆr att du spelade!\n");
                 gameIsRunning = false;
                 break;
 
@@ -175,10 +183,10 @@ int main()
     return 0;
 }
 
-// Sj√§lva spelet
+// Sj‰lva spelet
 void gameMechanics()
 {
-    // Variabler som beh√∂vs
+    // Variabler som behˆvs
     int randomNumber;
     char playerInput[MAXELEMENTS];
     int playerGuess = 0;
@@ -186,51 +194,63 @@ void gameMechanics()
     int endGame = 2;
     int answerQuestion;
     char endGameAnswer[100];
-    int tempIfErrorInput = 0; // Ifall man r√•kar gissa n√•t som inte √§r en siffra eller under 1/√∂ver 100
+    int tempIfErrorInput = 0; // Ifall man rÂkar gissa nÂt som inte ‰r en siffra eller under 1/ˆver 100
 
     srand(time(0)); // Generera random seed
 
     while(endGame != 1)
     {
-        randomNumber = (rand() % MAXROLL) + MINROLL; // Generera ett slumpm√§ssigt nummer
+        randomNumber = (rand() % MAXROLL) + MINROLL; // Generera ett slumpm‰ssigt nummer
         numberOfGuesses = 0;
         answerQuestion = 1;
 
         do
         {
-            system("cls");
+            // system("cls");
+            clearConsole();
             if(numberOfGuesses != 0)
             {
                 if(playerGuess < 1 || playerGuess > 100)
                 {
-                    playerGuess = tempIfErrorInput; // √Öterst√§ller gissningen
-                    printf("Gissa p√• ett nummer fr√•n 1 till 100.\n");
+                    for (int i = 0; i < strlen(playerInput); i++)
+                    {
+                        if (!isdigit(playerInput[i]))
+                        {
+                            printf("Du har inte skrivit in ett heltal. ");
+                            numberOfGuesses--;
+                            break;
+                        }
+                    }
+                    
+                    printf("Gissa bara pÂ heltal frÂn 1 till 100.\n");
+                    playerGuess = tempIfErrorInput; // ≈terst‰ller gissningen
                 }
                 printf("Gissning: %d\n", playerGuess);
                 
                 if(playerGuess < randomNumber)
                 {
-                    printf("Talet √§r h√∂gre!\n");
+                    printf("Talet ‰r hˆgre!\n");
                 }
                 else if (playerGuess > randomNumber)
                 {
-                    printf("Talet √§r l√§gre!\n");
+                    printf("Talet ‰r l‰gre!\n");
                 }
             }
             tempIfErrorInput = playerGuess;
             printf("Skriv in din gissning: ");
-            scanf(" %s", &playerInput);
+            scanf(" %10s", &playerInput);
             playerGuess = atoi(playerInput);
             numberOfGuesses++;
         }while (playerGuess != randomNumber);
 
-        system("cls");
-        printf("R√§tt! Bra gissat.\nDu gissade r√§tt p√• %d f√∂rs√∂k.\n", numberOfGuesses);
+        clearConsole();
+        // system("cls");
+        printf("R‰tt! Bra gissat.\nDu gissade r‰tt pÂ %d fˆrsˆk.\n", numberOfGuesses);
         updateScores(numberOfGuesses);
         
         endGame = 1;
 
-        fflush(stdin);
+        fflush(stdin);        
     }
     return;
 }
@@ -238,9 +258,11 @@ void gameMechanics()
 // Skriv ut low-score-listan
 void showScores()
 {
-    system("cls");
+    //system("cls");
     fflush(stdin);
-    printf("Low-Score-Listan! L√§gre √§r b√§ttre!\n");
+    clearConsole();
+
+    printf("Low-Score-Listan! L‰gre ‰r b‰ttre!\n");
     
     for(int i = 0; i < 5; i++)
     {
@@ -252,16 +274,12 @@ void showScores()
             struct tm *convertedTime;
             // time_t timeInt = scores[i].times;
             // time(&timeInt);
-            convertedTime = gmtime(&scores[i].times);
-            convertedTime->tm_hour++;
+            convertedTime = gmtime(&scores[i].time);
+            convertedTime->tm_hour++; // Fˆr att ha vÂr tid och inte GMT
             if(convertedTime->tm_hour >= 24)
             {
                 convertedTime->tm_hour = 0;
             }
-
-
-
-
             strftime(printTime, 100, "%y-%m-%d %H:%M", convertedTime);
 
             printf("%d\t", scores[i].score);
@@ -289,15 +307,16 @@ void showScores()
         printf("\n");
     }
     */
-    printf("Sl√• n√•gons po√§ng f√∂r att komma in p√• listan. Tryck enter f√∂r att forts√§tta.\n");
+    printf("SlÂ nÂgons po‰ng fˆr att komma in pÂ listan. Tryck enter fˆr att forts‰tta.\n");
     hitEnter();
     fflush(stdin);
-    system("cls");
+    // system("cls");
+    clearConsole();
     return;    
 }
 
-// J√§mf√∂r antal gissningar med low-score-listan och uppdatera arrayerna.
-// Om antalet gissningar √§r l√§gre √§n n√•gon p√• listan, uppdatera listan och
+// J‰mfˆr antal gissningar med low-score-listan och uppdatera arrayerna.
+// Om antalet gissningar ‰r l‰gre ‰n nÂgon pÂ listan, uppdatera listan och
 // skriv in listan i filen igen.
 void updateScores(int numberOfGuesses)
 {
@@ -312,7 +331,7 @@ void updateScores(int numberOfGuesses)
 
     for(int i = 0; i < MAXELEMENTS; i++)
     {
-        // Hitta platsen p√• listan d√§r po√§ngen ska in
+        // Hitta platsen pÂ listan d‰r po‰ngen ska in
         if(numberOfGuesses < scores[i].score)
         {
             break;
@@ -323,17 +342,19 @@ void updateScores(int numberOfGuesses)
         }        
     }
 
-    if(marker < 5) // Om po√§ngen ska in p√• listan..
+    if(marker < 5) // Om po‰ngen ska in pÂ listan..
     {
-        printf("Du tog dig in p√• lowscore-listan! Skriv in ditt namn: ");
-        scanf(" %s", enterName);
+        printf("Du tog dig in pÂ lowscore-listan! Skriv in ditt namn: ");
+        scanf(" %25s", enterName);
+        // fgets(name, sizeof(name), stdin);
+        // fgets(enterName, sizeof(enterName), stdin);
 
         for(int i = 4; i > marker; i--)
         {
-            // Flytta ner allt under p√• listan
+            // Flytta ner allt under pÂ listan
             scores[i].score = scores[i-1].score;
             strcpy(scores[i].name, scores[i - 1].name);
-            scores[i].times = scores[i - 1].times;
+            scores[i].time = scores[i - 1].time;
 
             /*
             lowScoreScores[i] = lowScoreScores[i - 1];
@@ -341,10 +362,10 @@ void updateScores(int numberOfGuesses)
             lowScoreTimes[i] = lowScoreTimes[i - 1];
             */
         }
-        // L√§gg till namn och po√§ng p√• r√§tt plats i listan
+        // L‰gg till namn och po‰ng pÂ r‰tt plats i listan
         scores[marker].score = numberOfGuesses;
         strcpy(scores[marker].name, enterName);
-        scores[marker].times = timeNow;
+        scores[marker].time = timeNow;
 
         writeToFile(scores, sizeof(scores));
 
@@ -383,7 +404,6 @@ void updateScores(int numberOfGuesses)
 
     hitEnter();
     fflush(stdin);
-    return;
 }
 
 void writeToFile(char *p, size_t size)
@@ -403,7 +423,7 @@ void readFromFile(char *p, size_t size)
     }
 }
 
-// Funktion skapad bara f√∂r att kunna pausa innan man rensar sk√§rmen och l√•ter anv√§ndaren trycka p√• enter
+// Funktion skapad bara fˆr att kunna pausa innan man rensar sk‰rmen och lÂter anv‰ndaren trycka pÂ enter
 void hitEnter()
 {
     while (1) 
@@ -417,4 +437,9 @@ void hitEnter()
         }
     }
     return;
+}
+
+void clearConsole(void)
+{
+    printf("\x1b[H\x1b[2J\x1b[3J");
 }
