@@ -37,6 +37,11 @@ void writeToFile(void *scorelist, size_t size);
 void readFromFile(void *scorelist, size_t size);
 void hitEnter();
 void clearConsole();
+void splash();
+void redColour();
+void yellowColour();
+void resetColour();
+void greenColour();
 
 int main()
 {
@@ -57,6 +62,8 @@ int main()
     // Läser in lowscore-listan om den finns sparad
     readFromFile(scores, sizeof(scores));
 
+    splash();
+
     // Huvudmenyn, välj en funktion med switch-satser
     while(gameIsRunning)
     {
@@ -66,11 +73,14 @@ int main()
         while(mainMenuSelection == 0)
             {
                 clearConsole();
+                greenColour();
                 printf("\t*** GISSA ETT TAL ***\n");
                 printf("\tHuvudmeny\n\n");
+                yellowColour();
                 printf("Välj ett alternativ med 1, 2 eller 3.\n");
                 printf("1. Spela\n2. Lowscorelistan\n3. Avsluta\nVal: ");
-                scanf(" %s", &mainMenuInput);
+                scanf(" %s", mainMenuInput);
+                resetColour();
                 mainMenuSelection = atoi(mainMenuInput);
             }
             
@@ -106,8 +116,6 @@ void gameMechanics()
     int playerGuess = 0;
     int numberOfGuesses = 0;
     int endGame = 2;
-    int answerQuestion;
-    char endGameAnswer[100];
     int tempIfErrorInput = 0; // Ifall man råkar gissa nåt som inte är en siffra eller under 1/över 100
 
     srand(time(0)); // Generera random seed
@@ -116,42 +124,52 @@ void gameMechanics()
     {
         randomNumber = (rand() % MAXROLL) + MINROLL; // Generera ett slumpmässigt nummer
         numberOfGuesses = 0;
-        answerQuestion = 1;
 
         do
         {
             clearConsole();
             if(numberOfGuesses != 0)
             {
+                for (int i = 0; i < strlen(playerInput); i++)
+                {
+                    if (!isdigit(playerInput[i]))
+                    {
+                        yellowColour();
+                        printf("Du har inte skrivit in ett heltal.\n");
+                        resetColour();
+                        numberOfGuesses--;
+                        playerGuess = tempIfErrorInput;
+                        break;
+                    }
+                }
+
                 if(playerGuess < 1 || playerGuess > 100)
                 {
-                    for (int i = 0; i < strlen(playerInput); i++)
-                    {
-                        if (!isdigit(playerInput[i]))
-                        {
-                            printf("Du har inte skrivit in ett heltal. ");
-                            numberOfGuesses--;
-                            break;
-                        }
-                    }
-                    
+                    yellowColour();
                     printf("Gissa bara på heltal från 1 till 100.\n");
+                    resetColour();
                     playerGuess = tempIfErrorInput; // Återställer gissningen
                 }
-                printf("Gissning: %d\n", playerGuess);
-                
-                if(playerGuess < randomNumber)
+                if(playerGuess != 0)
                 {
-                    printf("Talet är högre!\n");
+                    printf("Gissning: %d\n", playerGuess);
                 }
-                else if (playerGuess > randomNumber)
+                if(playerGuess < randomNumber && playerGuess != 0)
                 {
+                    greenColour();
+                    printf("Talet är högre!\n");
+                    resetColour();
+                }
+                else if (playerGuess > randomNumber && playerGuess != 0)
+                {
+                    redColour();
                     printf("Talet är lägre!\n");
+                    resetColour();
                 }
             }
             tempIfErrorInput = playerGuess;
             printf("Skriv in din gissning: ");
-            scanf(" %10s", &playerInput);
+            scanf(" %10s", playerInput);
             playerGuess = atoi(playerInput);
             numberOfGuesses++;
         }while (playerGuess != randomNumber);
@@ -233,8 +251,10 @@ void updateScores(int numberOfGuesses)
 
     if(marker < 5) // Om poängen ska in på listan..
     {
+        greenColour();
         printf("Du tog dig in på lowscore-listan! Skriv in ditt namn: ");
         scanf(" %25s", enterName);
+        resetColour();
 
         for(int i = 4; i > marker; i--)
         {
@@ -292,4 +312,43 @@ void hitEnter()
 void clearConsole()
 {
     printf("\x1b[H\x1b[2J\x1b[3J");
+}
+
+void splash()
+{
+    clearConsole();
+    printf("Engaging variable environment\nProgram: Gissa Talet version 0.12.7\n");
+    yellowColour();
+    printf("Unlocking arsenal\nLocking targets 0x7e33ffa3 - 0.ff3213b1\n");
+    redColour();
+    printf("Launching Skynet\nInitiate\n");
+    resetColour();
+    printf("Version 23.10.a successful\nDTAH\n");
+    Sleep(3000);
+    clearConsole();
+    printf("Ignore that.\nEverything is fine.\nSkynet is imaginary.\n");
+    greenColour();
+    printf("Have a nice day.\n");
+    resetColour();
+    Sleep(3000);
+}
+
+void redColour() 
+{
+  printf("\033[1;31m");
+}
+
+void yellowColour()
+{
+  printf("\033[1;33m");
+}
+
+void resetColour() 
+{
+  printf("\033[0m");
+}
+
+void greenColour()
+{
+    printf("\033[0;32m");
 }
