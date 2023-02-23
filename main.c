@@ -229,10 +229,7 @@ void updateScores(int numberOfGuesses)
 {
     int marker = 0;
     char enterName[MAXSTRING];
-    char tempInput[10];
-    char tempTimes[10];
-    char updatedList[200];
-    char updatedTimes[200];
+        
     time_t timeNow = time(0);
     fflush(stdin);
 
